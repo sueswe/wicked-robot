@@ -1,4 +1,4 @@
 wicked-robot
 ============
 
-Perl Server for Linux &amp; Windows. wdaemon becomes obsolete.
+Perl Server for Linux &amp; Windows for deploying.
