@@ -5,8 +5,8 @@
 ##############################################################################
 
 %actions = (
-    
-    'deploy' => '/foo/bar/deploy-test.sh',
+    # define keywords and actions here
+    'deploy test' => '/foo/bar/deploy-test.sh',
 
 
 
