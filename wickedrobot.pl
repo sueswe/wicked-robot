@@ -77,10 +77,14 @@ while ($client = $server->accept()) {
 ##############################################################################
 
 sub execute {
-    my $command = shift;    
-    INFO "$command: $actions{$command} ";
-    my $process = $actions{$command};
-    runcmd("$process");
+    my $command = shift;
+    my $proc = $actions{$command};
+    if ( ! defined $proc ) {
+        DEBUG("nothing to do for $command");
+    } else {
+        INFO("Ich starte jetzt $proc");
+        runcmd("$proc");
+    }
     
 }
 
@@ -88,13 +92,12 @@ sub execute {
 sub runcmd {
     my (@command) = @_;
     open(FH,"-|","@command") || ERROR("Problem running [@command] ");
-        while(<FH>) {
+    while(<FH>) {
         my $out .= $_;
         my $timestamp = localtime();
         print "($timestamp): $out";
-        #$c++;
-        }
-        close(FH);
+    }
+    close(FH);
 }
 
 
