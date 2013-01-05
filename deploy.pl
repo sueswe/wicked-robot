@@ -16,7 +16,7 @@ my $sock = new IO::Socket::INET (
     Proto => 'tcp',
     Type => SOCK_STREAM,
 ) || die "Could not create socket: $!\n";  #unless $sock;
-print $sock "deploy";
+print $sock "deploy test";
 close($sock);
 
 
