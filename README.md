@@ -12,7 +12,7 @@ on demand when you need them.
 The wickedclient.pl is just an example how messages
 can be communivated to the server.
 
-* phibot (&#934;bot)
+* phibot (&#966;bot)
 
 The phibot is an bot for an irc-channel. As like the wickedrobot,
 you can order him commands. 
