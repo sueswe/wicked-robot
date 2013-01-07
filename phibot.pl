@@ -11,10 +11,10 @@
 ##############################################################################
 
 ##############################################################################
-my $server = "aiki-base.dyndns.org";
+my $server = "scheduling.sv.ooegkk.at";
 my $nick = "phibot";
 my $login = "phibot";
-my $channel = "#phibot";
+my $channel = "#test";
 ##############################################################################
 
 use warnings;
@@ -44,14 +44,16 @@ while (my $input = <$sock>) {
         last;
     }
     elsif ($input =~ /433/) {
-        die "Sorry, Nickname ist schon in Verwendung. \n";
+        die "Nickname ist schon in Verwendung. \n";
     }
 }
  
 # Join:
 print $sock "JOIN $channel\r\n";
-print $sock "NOTICE $channel :Hello everyone!\r\n";
- 
+print $sock "PRIVMSG $channel :Hallo Leute!\r\n";
+
+read_actions();
+
 #sleep(3);
 #print $sock "PART $channel :Good bye.\n";
 
@@ -60,11 +62,11 @@ while (my $input = <$sock>) {
     print "$input\n";
     if ($input =~ /^PING(.*)$/i) {
         # respond to PINGs to avoid disconnects.
-        print "I received a PING\n";
+        # print "[INFO] I received a PING \n";
         print $sock "PONG $1\r\n";
     }
-    if ($input =~ m/PRIVMSG $nick :reload/ig ) { 
-        print $sock "NOTICE $channel :Reloading actions file \r\n";
+    if ($input =~ m/PRIVMSG $channel :$nick: reload/ig ) { 
+        print $sock "PRIVMSG $channel :Okay, ich habe das config-file neu geladen. \r\n";
         reload_actions(); 
     }
     
@@ -82,27 +84,32 @@ while (my $input = <$sock>) {
 #
 ##############################################################################
 
+
 sub reload_actions {
     print "Reloading actions.rc ... ";
     require("actions.rc") || warn("ERROR: $! \n");
     print "[OK]\n";
 }
 
+
 sub execute {
     my $command = shift;
-    
-    # wir benötigen hier eine suchfunktion!
-    
-    my $proc = $actions{$command};
+    my @array = split(':',$command);
+
+    my $p = $array[$#array];
+    print "[INFO] proc: $p \n";
+    my $proc = $actions{$p};
+    print "[INFO] Action: $proc \n";
     if ( ! defined $proc ) {
-        print("nothing to do for $command");
-        print $sock "NOTICE $channel :Da gibts nichts zu tun fuer mich =) \r\n";
+        print("[INFO]: nothing to do for $command \n");
+        print $sock "PRIVMSG $channel :Da gibts nichts zu tun fuer mich =) \r\n";
     } else {
-        print $sock "NOTICE $channel :Ich starte jetzt $proc \r\n";
+        print $sock "PRIVMSG $channel :Ich starte jetzt $proc \r\n";
         runcmd("$proc");
     }
     
 }
+
 
 sub runcmd {
     my (@command) = @_;
@@ -114,3 +121,15 @@ sub runcmd {
     }
     close(FH);
 }
+
+
+sub read_actions {
+    foreach my $key (%actions) {
+        print "[INFO] : $actions{$key} ";
+    }
+}
+
+
+
+
+
