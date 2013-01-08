@@ -52,12 +52,7 @@ while (my $input = <$sock>) {
 print $sock "JOIN $channel\r\n";
 print $sock "PRIVMSG $channel :Zu ihren Diensten. \r\n";
 
-#read_actions();
-#sleep(3);
-#print $sock "PART $channel :Good bye. \n";
-#exit(9);
-
-
+# Keep us alive:
 while (my $input = <$sock>) {
     chop $input;
     print "$input\n";
@@ -66,20 +61,20 @@ while (my $input = <$sock>) {
         # print "[INFO] I received a PING \n";
         print $sock "PONG $1\r\n";
     }
-    # reload
+    # <reload>
     if ($input =~ m/PRIVMSG $channel :$nick: reload/ig ) { 
         print $sock "PRIVMSG $channel :Okay, ich habe das config-file neu geladen. \r\n";
         reload_actions(); 
     }
-    # rules
+    # <rules>
     if ($input =~ m/PRIVMSG $channel :$nick: rules/ig ) {
         read_actions();
     }
-    # part
+    # <part>
     if ($input =~ m/PRIVMSG $channel :$nick: go away/ig ) {
         part();
     }
-    # (actions.rc)
+    # <actions.rc>
     if ($input =~ m/$channel :$nick:/ig ) { 
         execute("$input");
     }
