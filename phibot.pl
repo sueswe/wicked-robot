@@ -50,7 +50,7 @@ while (my $input = <$sock>) {
  
 # Join:
 print $sock "JOIN $channel\r\n";
-print $sock "PRIVMSG $channel :Zu ihren Diensten. \r\n";
+print $sock "PRIVMSG $channel :Zu ihren Diensten. Verwende mich mit $nick: <commando>\r\n";
 
 # Keep us alive:
 while (my $input = <$sock>) {
@@ -77,6 +77,9 @@ while (my $input = <$sock>) {
     # <hilfe>
     ($input =~ m/$nick/ig && $input =~ m/help/ig ) {
         hilfe();
+    } elsif
+    ($input =~ m/$nick/ig && $input =~ m/bier/ig ) {
+        beer();
     }
     # <actions.rc>
     elsif ($input =~ m/$channel :$nick:/ig ) { 
@@ -107,6 +110,7 @@ sub execute {
     if ( ! defined $proc ) {
         print("[INFO]: nothing to do for $command \n");
         print $sock "PRIVMSG $channel :Ich habe keine passende Aktion gefunden zu Kommando: $p \r\n";
+        print $sock "PRIVMSG $channel :Sprich mich mal mit help an :-) \r\n";
     } else {
         print $sock "PRIVMSG $channel :Werde $proc durchfuehren ... \r\n";
         runcmd("$proc");
@@ -148,7 +152,14 @@ sub part {
 }
 
 
+sub beer {
+    print $sock "PRIVMSG $channel :Ich habe dir ein Bier bei http://www.duff-shop.at/ bestellt. \r\n";
+}
+
 sub hilfe {
     print "Help called.\n";
-    print $sock "PRIVMSG $channel :Hilfe: reload,rules,leave,help \r\n";
+    print $sock "PRIVMSG $channel :Hilfe: reload,rules,leave,help,bier \r\n";
+    
 }
+
+
