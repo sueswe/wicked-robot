@@ -127,7 +127,7 @@ sub execute {
 sub reload_actions {
     print $sock "PRIVMSG $channel :Ich lade das config-file neu. \r\n";
     print "Reloading actions.rc ... ";
-    require("actions.rc") || warn("ERROR: $! \n");
+    do("actions.rc") || warn("ERROR: $! \n");
     print "[OK]\n";
 }
 
