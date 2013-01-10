@@ -79,7 +79,7 @@ while (my $input = <$sock>) {
         hilfe();
     } elsif
     ($input =~ m/$nick/ig && $input =~ m/bier/ig ) {
-        beer();
+        beer("$input");
     }
     # <actions.rc>
     elsif ($input =~ m/$channel :$nick:/ig ) { 
@@ -102,6 +102,11 @@ sub execute {
     $command =~ s/\n//ig; 
     print "[COMMAND] $command \n";
     my @array = split(':',$command);
+    
+    my @usersuche = split('!',$command);
+    my $you = $usersuche[0];
+    $you =~ s/://ig;
+    
     my $anz = @array;
     my $p = $array[$anz - 1];
     $p =~ s/\s+//ig;
@@ -110,9 +115,9 @@ sub execute {
     if ( ! defined $proc ) {
         print("[INFO]: nothing to do for $command \n");
         print $sock "PRIVMSG $channel :Ich habe keine passende Aktion gefunden zu Kommando: $p \r\n";
-        print $sock "PRIVMSG $channel :Sprich mich mal mit help an :-) \r\n";
+        print $sock "PRIVMSG $channel :$you: Sprich mich mal mit help an :-) \r\n";
     } else {
-        print $sock "PRIVMSG $channel :Werde $proc durchfuehren ... \r\n";
+        print $sock "PRIVMSG $channel :$you: Werde $proc durchfuehren ... \r\n";
         runcmd("$proc");
     }
     
@@ -153,7 +158,11 @@ sub part {
 
 
 sub beer {
-    print $sock "PRIVMSG $channel :Ich habe dir ein Bier bei http://www.duff-shop.at/ bestellt. \r\n";
+    my ($command) = @_;
+    my @usersuche = split('!',$command);
+    my $you = $usersuche[0];
+    $you =~ s/://ig;
+    print $sock "PRIVMSG $channel :$you, ich habe dir ein Bier bei http://www.duff-shop.at/ bestellt. \r\n";
 }
 
 sub hilfe {
