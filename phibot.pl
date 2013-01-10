@@ -54,28 +54,32 @@ print $sock "PRIVMSG $channel :Zu ihren Diensten. \r\n";
 
 # Keep us alive:
 while (my $input = <$sock>) {
-    chop $input;
-    print "$input\n";
+    chomp($input);
+    print "[IN] $input\n";
     if ($input =~ /^PING(.*)$/i) {
         # respond to PINGs to avoid disconnects.
         # print "[INFO] I received a PING \n";
         print $sock "PONG $1\r\n";
-    }
+    } elsif 
     # <reload>
-    if ($input =~ m/PRIVMSG $channel :$nick: reload/ig ) { 
+    ($input =~ m/PRIVMSG $channel :$nick: reload/ig ) { 
         print $sock "PRIVMSG $channel :Okay, ich habe das config-file neu geladen. \r\n";
         reload_actions(); 
-    }
+    } elsif 
     # <rules>
-    if ($input =~ m/PRIVMSG $channel :$nick: rules/ig ) {
+    ($input =~ m/PRIVMSG $channel :$nick: rules/ig ) {
         read_actions();
-    }
+    } elsif
     # <part>
-    if ($input =~ m/PRIVMSG $channel :$nick: go away/ig ) {
+    ($input =~ m/PRIVMSG $channel :$nick: leave/ig || $input =~ m/PRIVMSG $channel :$nick: part/ig ) {
         part();
+    } elsif
+    # <hilfe>
+    ($input =~ m/PRIVMSG $channel :$nick: hilfe/ig ) {
+        hilfe();
     }
     # <actions.rc>
-    if ($input =~ m/$channel :$nick:/ig ) { 
+    elsif ($input =~ m/$channel :$nick:/ig ) { 
         execute("$input");
     }
 }
@@ -88,30 +92,33 @@ while (my $input = <$sock>) {
 #
 ##############################################################################
 
+sub execute {
+    my ($command) = @_;
+    $command =~ s/\r/\n/ig;
+    $command =~ s/\e//ig;
+    $command =~ s/\n//ig; 
+    print "[COMMAND] $command \n";
+    my @array = split(':',$command);
+    my $anz = @array;
+    my $p = $array[$anz - 1];
+    $p =~ s/\s+//ig;
+    print "[INFO] proc: \"$p\" \n";
+    my $proc = $actions{$p};
+    if ( ! defined $proc ) {
+        print("[INFO]: nothing to do for $command \n");
+        print $sock "PRIVMSG $channel :Ich habe keine passende Aktion gefunden zu Kommando: $p \r\n";
+    } else {
+        print $sock "PRIVMSG $channel :Werde $proc durchfuehren ... \r\n";
+        runcmd("$proc");
+    }
+    
+}
+
 
 sub reload_actions {
     print "Reloading actions.rc ... ";
     require("actions.rc") || warn("ERROR: $! \n");
     print "[OK]\n";
-}
-
-
-sub execute {
-    my $command = shift;
-    my @array = split(':',$command);
-
-    my $p = $array[$#array];
-    print "[INFO] proc: $p \n";
-    my $proc = $actions{$p};
-    print "[INFO] Action: $proc \n";
-    if ( ! defined $proc ) {
-        print("[INFO]: nothing to do for $command \n");
-        print $sock "PRIVMSG $channel :Da gibts nichts zu tun fuer mich =) \r\n";
-    } else {
-        print $sock "PRIVMSG $channel :Ich starte jetzt $proc \r\n";
-        runcmd("$proc");
-    }
-    
 }
 
 
@@ -136,7 +143,11 @@ sub read_actions {
 
 sub part {
     print $sock "PART $channel :Good bye. \n";
+    exit(100);
 }
 
 
-
+sub hilfe {
+    print "Help called.\n";
+    print $sock "PRIVMSG $channel :Hilfe: reload,rules,leave,part,hilfe \r\n";
+}
