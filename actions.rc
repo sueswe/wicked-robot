@@ -5,8 +5,8 @@
 ##############################################################################
 
 %actions = ( 
-    deploytest => '/foo/bar/deploy-test.sh', 
-    sdf => 'echo sdf',
+    "deploy test" => '/foo/bar/deploy-test.sh', 
+    "sdf" => 'echo sdf',
 );
 
 
