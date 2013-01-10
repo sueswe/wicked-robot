@@ -14,7 +14,7 @@
 my $server  = "scheduling.sv.ooegkk.at";
 my $nick    = "phibot";
 my $login   = "phibot";
-my $channel = "#test";
+my $channel = "#scheduling";
 ##############################################################################
 
 use warnings;
@@ -24,7 +24,7 @@ use IO::Socket;
 $|=1;
 
 our %actions;
-reload_actions();
+require("actions.rc") || warn("ERROR: $! \n");
 
 # Verbinde zum IRC server.
 print "Verbinde mich zum Server $server ... ";
@@ -60,22 +60,22 @@ while (my $input = <$sock>) {
         # respond to PINGs to avoid disconnects.
         # print "[INFO] I received a PING \n";
         print $sock "PONG $1\r\n";
+        print $sock "PRIVMSG $channel :PONG :-) \r\n";
     } elsif 
     # <reload>
-    ($input =~ m/PRIVMSG $channel :$nick: reload/ig ) { 
-        print $sock "PRIVMSG $channel :Okay, ich habe das config-file neu geladen. \r\n";
+    ($input =~ m/$nick/ig && $input =~ m/reload/ig ) { 
         reload_actions(); 
     } elsif 
     # <rules>
-    ($input =~ m/PRIVMSG $channel :$nick: rules/ig ) {
+    ($input =~ m/$nick/ig && $input =~ m/rules/ig ) {
         read_actions();
     } elsif
     # <part>
-    ($input =~ m/PRIVMSG $channel :$nick: leave/ig || $input =~ m/PRIVMSG $channel :$nick: part/ig ) {
+    ($input =~ m/$nick/ig && $input =~ m/leave/ig ) {
         part();
     } elsif
     # <hilfe>
-    ($input =~ m/PRIVMSG $channel :$nick: hilfe/ig ) {
+    ($input =~ m/$nick/ig && $input =~ m/help/ig ) {
         hilfe();
     }
     # <actions.rc>
@@ -116,6 +116,7 @@ sub execute {
 
 
 sub reload_actions {
+    print $sock "PRIVMSG $channel :Ich lade das config-file neu. \r\n";
     print "Reloading actions.rc ... ";
     require("actions.rc") || warn("ERROR: $! \n");
     print "[OK]\n";
@@ -149,5 +150,5 @@ sub part {
 
 sub hilfe {
     print "Help called.\n";
-    print $sock "PRIVMSG $channel :Hilfe: reload,rules,leave,part,hilfe \r\n";
+    print $sock "PRIVMSG $channel :Hilfe: reload,rules,leave,help \r\n";
 }
