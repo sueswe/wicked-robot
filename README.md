@@ -1,4 +1,4 @@
-(&#966;bot)bot and wicked-robot
+  &#966;bot and wicked-robot
 ===============================
 
 * phibot (&#966;bot)
