@@ -50,7 +50,7 @@ while (my $input = <$sock>) {
  
 # Join:
 print $sock "JOIN $channel\r\n";
-print $sock "PRIVMSG $channel :Zu ihren Diensten. Verwende mich mit $nick: <commando>\r\n";
+print $sock "PRIVMSG $channel :Zu ihren Diensten. Verwende mich mit $nick: <command>\r\n";
 
 # Keep us alive:
 while (my $input = <$sock>) {
@@ -60,7 +60,7 @@ while (my $input = <$sock>) {
         # respond to PINGs to avoid disconnects.
         # print "[INFO] I received a PING \n";
         print $sock "PONG $1\r\n";
-        print $sock "PRIVMSG $channel :PONG :-) \r\n";
+        #print $sock "PRIVMSG $channel :PONG :-) \r\n";
     } elsif 
     # <reload>
     ($input =~ m/$nick/ig && $input =~ m/reload/ig ) { 
@@ -75,7 +75,7 @@ while (my $input = <$sock>) {
         part();
     } elsif
     # <hilfe>
-    ($input =~ m/$nick/ig && $input =~ m/help/ig ) {
+    ($input =~ m/$nick/ig && $input =~ m/help/ig || $input =~ m/hilf/ig ) {
         hilfe();
     } elsif
     ($input =~ m/$nick/ig && $input =~ m/bier/ig ) {
@@ -109,7 +109,9 @@ sub execute {
     
     my $anz = @array;
     my $p = $array[$anz - 1];
-    $p =~ s/\s+//ig;
+    $p =~ s/^\s//ig;
+    #$p =~ s/$\s//ig;
+    
     print "[INFO] proc: \"$p\" \n";
     my $proc = $actions{$p};
     if ( ! defined $proc ) {
@@ -145,9 +147,10 @@ sub runcmd {
 
 
 sub read_actions {
+    print $sock "PRIVMSG $channel :Folgene Eintraege sind in der actions.rc : \n\r";
     foreach my $g (keys %actions) {
         print "[INFO]: $g \t--> $actions{$g}\n";
-        print $sock "PRIVMSG $channel :Kommando $g \t--> $actions{$g}\n";
+        print $sock "PRIVMSG $channel :Kommando $g = $actions{$g} \n\r";
     }
 }
 
@@ -167,7 +170,12 @@ sub beer {
 
 sub hilfe {
     print "Help called.\n";
-    print $sock "PRIVMSG $channel :Hilfe: reload,rules,leave,help,bier \r\n";
+    print $sock "PRIVMSG $channel :Folgende Kommandos sind in der actions.rc eingetragen: \r\n"; 
+    print $sock "PRIVMSG $channel :reload = Lade actions.rc neu (bspw. nach Aenderungen) \r\n";
+    print $sock "PRIVMSG $channel :rules  = Zeige mir die eingestellten Kommandos in der actions.rc \r\n";
+    print $sock "PRIVMSG $channel :leave  = Ich verlasse den Server \r\n";
+    print $sock "PRIVMSG $channel :bier   = ich bestelle dir ein Bier \r\n";
+     
     
 }
 
