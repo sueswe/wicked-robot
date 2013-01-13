@@ -170,7 +170,6 @@ sub beer {
 
 sub hilfe {
     print "Help called.\n";
-    print $sock "PRIVMSG $channel :Folgende Kommandos sind in der actions.rc eingetragen: \r\n"; 
     print $sock "PRIVMSG $channel :reload = Lade actions.rc neu (bspw. nach Aenderungen) \r\n";
     print $sock "PRIVMSG $channel :rules  = Zeige mir die eingestellten Kommandos in der actions.rc \r\n";
     print $sock "PRIVMSG $channel :leave  = Ich verlasse den Server \r\n";
