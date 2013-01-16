@@ -1,7 +1,8 @@
-  &#966;bot and wicked-robot
+===============================
+&#966;bot and wicked-robot
 ===============================
 
-# phibot (&#966;bot) 
+## phibot (&#966;bot) 
 
 The phibot is a bot for an irc-channel.  
 As like the wickedrobot, you can order him commands,  
@@ -19,7 +20,7 @@ and start it on your computer.
 
 
 
-# wickedrobot.pl #
+## wickedrobot.pl #
 
     (alpha-state)
 
