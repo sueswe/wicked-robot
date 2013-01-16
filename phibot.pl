@@ -4,14 +4,26 @@
 #
 # phibot
 #
-# Ein irc roboter, der Befehle entgegen nimmt.
+# A simple configureable command-irc-bot 
 # 
 # (c) 2013, <suess_w@gmx.net>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
 
 ##############################################################################
-my $server  = "scheduling.sv.ooegkk.at";
+my $server  = "localhost";
+my $port = 6667;
 my $nick    = "phibot";
 my $login   = "phibot";
 my $channel = "#scheduling";
@@ -26,31 +38,28 @@ $|=1;
 our %actions;
 require("actions.rc") || warn("ERROR: $! \n");
 
-# Verbinde zum IRC server.
-print "Verbinde mich zum Server $server ... ";
+print "Connectiong to $server ... ";
 my $sock = new IO::Socket::INET(
     PeerAddr => $server,
-    PeerPort => 6667,
-    Proto => 'tcp') or die "Verbindung nicht möglich: \n--> $! \n";
+    PeerPort => $port,
+    Proto => 'tcp') or die "Problem: \n--> $! \n";
  
 # Login:
 print $sock "NICK $nick\r\n";
 print $sock "USER $login 8 * :Perl IRC Hacks Robot\r\n";
  
 while (my $input = <$sock>) {
-    # Achte auf response vom Server
     if ($input =~ /004/) {
-        # Jetzt sind wir angemeldet
+        # login completed.
         last;
     }
     elsif ($input =~ /433/) {
-        die "Nickname ist schon in Verwendung. \n";
+        die "Nickname \"$nick\" already in use! \n";
     }
 }
  
-# Join:
-print $sock "JOIN $channel\r\n";
-print $sock "PRIVMSG $channel :Zu ihren Diensten. Verwende mich mit $nick: <command>\r\n";
+print $sock "JOIN $channel \r\n";
+print $sock "PRIVMSG $channel :At your service. You can ask me for help. \r\n";
 
 # Keep us alive:
 while (my $input = <$sock>) {
@@ -67,7 +76,7 @@ while (my $input = <$sock>) {
         reload_actions(); 
     } elsif 
     # <rules>
-    ($input =~ m/$nick/ig && $input =~ m/rules/ig ) {
+    ($input =~ m/$nick/ig && $input =~ m/action/ig ) {
         read_actions();
     } elsif
     # <part>
@@ -116,10 +125,9 @@ sub execute {
     my $proc = $actions{$p};
     if ( ! defined $proc ) {
         print("[INFO]: nothing to do for $command \n");
-        print $sock "PRIVMSG $channel :Ich habe keine passende Aktion gefunden zu Kommando: $p \r\n";
-        print $sock "PRIVMSG $channel :$you: Sprich mich mal mit help an :-) \r\n";
+        print $sock "PRIVMSG $channel :I'm sorry, I cannot find an operation for: $p \r\n";
     } else {
-        print $sock "PRIVMSG $channel :$you: Werde $proc durchfuehren ... \r\n";
+        print $sock "PRIVMSG $channel :$you: Ok, processing $proc ... \r\n";
         runcmd("$proc");
     }
     
@@ -127,16 +135,16 @@ sub execute {
 
 
 sub reload_actions {
-    print $sock "PRIVMSG $channel :Ich lade das config-file neu. \r\n";
+    print $sock "PRIVMSG $channel :Ok, reloading the configfile. \r\n";
     print "Reloading actions.rc ... ";
-    do("actions.rc") || warn("ERROR: $! \n");
+    do("actions.rc") || print($sock "PRIVMSG $channel :I had a problem reloading the configfile. Call the admin ... \r\n") && warn("ERROR: $! \n");
     print "[OK]\n";
 }
 
 
 sub runcmd {
     my (@command) = @_;
-    open(FH,"-|","@command") || print $sock "PRIVMSG $channel :Probleme mit [@command]: $! \r\n";
+    open(FH,"-|","@command") || print $sock "PRIVMSG $channel :Uhoh: [@command]: $! \r\n";
     while(<FH>) {
         my $out .= $_;
         my $timestamp = localtime();
@@ -147,10 +155,10 @@ sub runcmd {
 
 
 sub read_actions {
-    print $sock "PRIVMSG $channel :Folgene Eintraege sind in der actions.rc : \n\r";
+    print $sock "PRIVMSG $channel :Found following actions : \n\r";
     foreach my $g (keys %actions) {
         print "[INFO]: $g \t--> $actions{$g}\n";
-        print $sock "PRIVMSG $channel :Kommando $g = $actions{$g} \n\r";
+        print $sock "PRIVMSG $channel :Command $g = $actions{$g} \n\r";
     }
 }
 
@@ -165,16 +173,15 @@ sub beer {
     my @usersuche = split('!',$command);
     my $you = $usersuche[0];
     $you =~ s/://ig;
-    print $sock "PRIVMSG $channel :$you, ich habe dir ein Bier bei http://www.duff-shop.at/ bestellt. \r\n";
+    print $sock "PRIVMSG $channel :$you, you can order beer at http://www.duff-shop.at/  \r\n";
 }
 
 sub hilfe {
     print "Help called.\n";
-    print $sock "PRIVMSG $channel :reload = Lade actions.rc neu (bspw. nach Aenderungen) \r\n";
-    print $sock "PRIVMSG $channel :rules  = Zeige mir die eingestellten Kommandos in der actions.rc \r\n";
-    print $sock "PRIVMSG $channel :leave  = Ich verlasse den Server \r\n";
-    print $sock "PRIVMSG $channel :bier   = ich bestelle dir ein Bier \r\n";
-     
+    print $sock "PRIVMSG $channel :Well, maybe I can help you ... \r\n";
+    print $sock "PRIVMSG $channel :reload = reloading actions.rc (e.g. after updating actions.rc file) \r\n";
+    print $sock "PRIVMSG $channel :action  = show me the actions in the configfile \r\n";
+    print $sock "PRIVMSG $channel :leave  = I will leave the server and exit \r\n";
     
 }
 
