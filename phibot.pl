@@ -151,6 +151,8 @@ sub runcmd {
         print "($timestamp): $out";
     }
     close(FH);
+    my $RTC = $? >> 8;
+    print $sock "PRIVMSG $channel :Returncode @command : $RTC .\r\n";
 }
 
 
