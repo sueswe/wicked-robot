@@ -90,7 +90,7 @@ while (my $input = <$sock>) {
     ($input =~ m/$nick/ig && $input =~ m/bier/ig ) {
         beer("$input");
     }
-    # <actions.rc>
+    # do something from <actions.rc>
     elsif ($input =~ m/$channel :$nick:/ig ) { 
         execute("$input");
     }
@@ -181,9 +181,10 @@ sub beer {
 sub hilfe {
     print "Help called.\n";
     print $sock "PRIVMSG $channel :Well, maybe I can help you ... \r\n";
-    print $sock "PRIVMSG $channel :reload = reloading actions.rc (e.g. after updating actions.rc file) \r\n";
-    print $sock "PRIVMSG $channel :action  = show me the actions in the configfile \r\n";
-    print $sock "PRIVMSG $channel :leave  = I will leave the server and exit \r\n";
+    print $sock "PRIVMSG $channel :  say \r\n";
+    print $sock "PRIVMSG $channel :  $nick reload = reloading actions.rc (e.g. after updating actions.rc file) \r\n";
+    print $sock "PRIVMSG $channel :  $nick actions  = show me the actions in the configfile \r\n";
+    print $sock "PRIVMSG $channel :  $nick leave  = I will leave the server and exit \r\n";
     
 }
 
