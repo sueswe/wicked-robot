@@ -93,6 +93,13 @@ while (my $input = <$sock>) {
     # do something from <actions.rc>
     elsif ($input =~ m/$channel :$nick:/ig ) { 
         execute("$input");
+    } 
+    # triggere den JiskoTwitter
+    elsif ($input =~ m/ALERT/ig ) {
+        my @a = split('@',$input);
+        $a[2] =~ s/]/:/ig;
+        twitter("$a[2]");
+        #print "Rufe twitter\n";
     }
 }
 
@@ -103,6 +110,12 @@ while (my $input = <$sock>) {
 # FUNCTIONS
 #
 ##############################################################################
+
+sub twitter {
+    my (@string) = @_;
+    system("/usr/bin/perl /home/sueswe/jiskoTweet.pl \"@string\"");
+    #print "twitit: perl /home/sueswe/jiskoTweet.pl \"@string\"\n";
+}
 
 sub execute {
     my ($command) = @_;
@@ -149,6 +162,7 @@ sub runcmd {
         my $out .= $_;
         my $timestamp = localtime();
         print "($timestamp): $out";
+        print $sock "PRIVMSG $channel :you: $out \n";
     }
     close(FH);
     my $RTC = $? >> 8;
