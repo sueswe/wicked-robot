@@ -162,7 +162,7 @@ sub runcmd {
         my $out .= $_;
         my $timestamp = localtime();
         print "($timestamp): $out";
-        print $sock "PRIVMSG $channel :you: $out \n";
+        print $sock "PRIVMSG $channel : $out \n";
     }
     close(FH);
     my $RTC = $? >> 8;
@@ -174,8 +174,10 @@ sub read_actions {
     print $sock "PRIVMSG $channel :Found following actions : \n\r";
     foreach my $g (keys %actions) {
         print "[INFO]: $g \t--> $actions{$g}\n";
-        print $sock "PRIVMSG $channel :Command $g = $actions{$g} \n\r";
+        #print $sock "PRIVMSG $channel :Command $g = $actions{$g} \n\r";
+        print $sock "PRIVMSG $channel :      $g \n\r";
     }
+    print $sock "PRIVMSG $channel : Usage: phibot: <action> \n\r";
 }
 
 sub part {
@@ -199,6 +201,7 @@ sub hilfe {
     print $sock "PRIVMSG $channel :  $nick reload = reloading actions.rc (e.g. after updating actions.rc file) \r\n";
     print $sock "PRIVMSG $channel :  $nick actions  = show me the actions in the configfile \r\n";
     print $sock "PRIVMSG $channel :  $nick leave  = I will leave the server and exit \r\n";
+    print $sock "PRIVMSG $channel :  $nick : <action>  = Start the action (beware of the ':') \r\n";
     
 }
 
