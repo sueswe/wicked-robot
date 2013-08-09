@@ -113,7 +113,7 @@ while (my $input = <$sock>) {
 
 sub twitter {
     my (@string) = @_;
-    system("/usr/bin/perl /home/sueswe/jiskoTweet.pl \"@string\"");
+    system("/usr/bin/perl /home/sueswe/tweet.pl \"@string\"");
     #print "twitit: perl /home/sueswe/jiskoTweet.pl \"@string\"\n";
 }
 
@@ -132,16 +132,22 @@ sub execute {
     my $anz = @array;
     my $p = $array[$anz - 1];
     $p =~ s/^\s//ig;
-    #$p =~ s/$\s//ig;
     
-    print "[INFO] proc: \"$p\" \n";
-    my $proc = $actions{$p};
-    if ( ! defined $proc ) {
+    print "[DEBUG] Value from key: \"$p\" \n";
+    
+    my @T = split(' ',$p);
+    print "[DEBUG] Input: @T \n";
+    my $key = $T[0];
+    shift(@T);
+    print "[DEBUG] Input[0]: $key \n";
+    my $programm = $actions{$key};
+    
+    if ( ! exists($actions{"$key"})  ) {
         print("[INFO]: nothing to do for $command \n");
         print $sock "PRIVMSG $channel :I'm sorry, I cannot find an operation for: $p \r\n";
     } else {
-        print $sock "PRIVMSG $channel :$you: Ok, processing $proc ... \r\n";
-        runcmd("$proc");
+        print $sock "PRIVMSG $channel :$you: Ok, processing @T ... \r\n";
+        runcmd("$programm @T");
     }
     
 }
