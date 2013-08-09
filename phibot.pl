@@ -43,7 +43,7 @@ my $sock = new IO::Socket::INET(
     PeerAddr => $server,
     PeerPort => $port,
     Proto => 'tcp') or die "Problem: \n--> $! \n";
- 
+autoflush $sock 1;
 # Login:
 print $sock "NICK $nick\r\n";
 print $sock "USER $login 8 * :Perl IRC Hacks Robot\r\n";
