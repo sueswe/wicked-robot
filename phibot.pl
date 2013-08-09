@@ -150,7 +150,7 @@ sub execute {
 sub reload_actions {
     print $sock "PRIVMSG $channel :Ok, reloading the configfile. \r\n";
     print "Reloading actions.rc ... ";
-    do("actions.rc") || print($sock "PRIVMSG $channel :I had a problem reloading the configfile. Call the admin ... \r\n") && warn("ERROR: $! \n");
+    do("actions.rc") || print($sock "PRIVMSG $channel :I had a problem reloading the configfile. Call the admin ... [$!]\r\n") && warn("ERROR: $! \n");
     print "[OK]\n";
 }
 
