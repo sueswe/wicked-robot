@@ -179,7 +179,7 @@ sub runcmd {
 
 sub read_actions {
     print $sock "PRIVMSG $channel :Found following actions : \n\r";
-    foreach my $g (keys %actions) {
+    foreach my $g (sort keys %actions) {
         print "[INFO]: $g \t--> $actions{$g}\n";
         #print $sock "PRIVMSG $channel :Command $g = $actions{$g} \n\r";
         print $sock "PRIVMSG $channel :      $g \n\r";
