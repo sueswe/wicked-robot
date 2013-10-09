@@ -23,6 +23,7 @@
 
 ##############################################################################
 my $server  = "localhost";
+my $version = "0.2 rc6";
 my $port = 6667;
 my $nick    = "phibot";
 my $login   = "phibot";
@@ -59,7 +60,7 @@ while (my $input = <$sock>) {
 }
  
 print $sock "JOIN $channel \r\n";
-print $sock "PRIVMSG $channel :At your service. You can ask me for help. \r\n";
+print $sock "PRIVMSG $channel : At your service. You can ask me for help. (phibot $version ) \r\n";
 
 # Keep us alive:
 while (my $input = <$sock>) {
@@ -154,10 +155,10 @@ sub execute {
 
 
 sub reload_actions {
-    print $sock "PRIVMSG $channel :Ok, reloading the configfile. \r\n";
     print "Reloading actions.rc ... ";
     do("actions.rc") || print($sock "PRIVMSG $channel :I had a problem reloading the configfile. Call the admin ... [$!]\r\n") && warn("ERROR: $! \n");
     print "[OK]\n";
+    print $sock "PRIVMSG $channel : actions.rc reloaded. \r\n";
 }
 
 
