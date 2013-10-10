@@ -68,39 +68,47 @@ while (my $input = <$sock>) {
     print "[IN] $input\n";
     if ($input =~ /^PING(.*)$/i) {
         # respond to PINGs to avoid disconnects.
-        # print "[INFO] I received a PING \n";
         print $sock "PONG $1\r\n";
         #print $sock "PRIVMSG $channel :PONG :-) \r\n";
-    } elsif 
+    } 
     # <reload>
-    ($input =~ m/$nick/ig && $input =~ m/reload/ig ) { 
+    elsif ($input =~ m/$nick/ig && $input =~ m/reload/ig ) { 
         reload_actions(); 
-    } elsif 
+    } 
     # <rules>
-    ($input =~ m/$nick/ig && $input =~ m/action/ig ) {
+    elsif ($input =~ m/$nick/ig && $input =~ m/action/ig ) {
         read_actions();
-    } elsif
+    } 
     # <part>
-    ($input =~ m/$nick/ig && $input =~ m/leave/ig ) {
+    elsif ($input =~ m/$nick/ig && $input =~ m/leave/ig ) {
         part();
-    } elsif
+    } 
     # <hilfe>
-    ($input =~ m/$nick/ig && $input =~ m/help/ig || $input =~ m/hilf/ig ) {
+    elsif ($input =~ m/$nick/ig && $input =~ m/help/ig || $input =~ m/hilf/ig ) {
         hilfe();
-    } elsif
+    } 
+    # beer
+    elsif
     ($input =~ m/$nick/ig && $input =~ m/bier/ig ) {
         beer("$input");
+    } 
+    # show us the rules
+    elsif ( $input =~ m/$nick/ig && $input =~ m/rules/ig || $input =~ m/regeln/ig ) {
+        show_rules();
     }
     # do something from <actions.rc>
     elsif ($input =~ m/$channel :$nick:/ig ) { 
         execute("$input");
-    } 
+    }
     # triggere den JiskoTwitter
     elsif ($input =~ m/ALERT/ig ) {
         my @a = split('@',$input);
         $a[2] =~ s/]/:/ig;
-        twitter("$a[2]");
+        #twitter("$a[2]");
         #print "Rufe twitter\n";
+    }
+    else {
+        # ignored
     }
 }
 
@@ -153,14 +161,12 @@ sub execute {
     
 }
 
-
 sub reload_actions {
     print "Reloading actions.rc ... ";
     do("actions.rc") || print($sock "PRIVMSG $channel :I had a problem reloading the configfile. Call the admin ... [$!]\r\n") && warn("ERROR: $! \n");
     print "[OK]\n";
     print $sock "PRIVMSG $channel : actions.rc reloaded. \r\n";
 }
-
 
 sub runcmd {
     my (@command) = @_;
@@ -175,7 +181,6 @@ sub runcmd {
     my $RTC = $? >> 8;
     print $sock "PRIVMSG $channel :Returncode @command : $RTC .\r\n";
 }
-
 
 sub read_actions {
     print $sock "PRIVMSG $channel :Found following actions : \n\r";
@@ -192,7 +197,6 @@ sub part {
     exit(100);
 }
 
-
 sub beer {
     my ($command) = @_;
     my @usersuche = split('!',$command);
@@ -208,8 +212,15 @@ sub hilfe {
     print $sock "PRIVMSG $channel :  $nick reload = reloading actions.rc (e.g. after updating actions.rc file) \r\n";
     print $sock "PRIVMSG $channel :  $nick actions  = show me the actions in the configfile \r\n";
     print $sock "PRIVMSG $channel :  $nick leave  = I will leave the server and exit \r\n";
+    print $sock "PRIVMSG $channel :  $nick rules  = I will show you my rules \r\n";
     print $sock "PRIVMSG $channel :  $nick : <action>  = Start the action (beware of the ':') \r\n";
     
 }
 
+sub show_rules {
+    print $sock "PRIVMSG $channel : Ein Roboter darf keinen Menschen verletzen.\r\n";
+    print $sock "PRIVMSG $channel : Ein Roboter ist verpflichtet, mit Menschen zusammenzuarbeiten, es sei denn, diese Zusammenarbeit stünde im Widerspruch zum Ersten Gesetz.\r\n";
+    print $sock "PRIVMSG $channel : Ein Roboter muss seine eigene Existenz schützen, so lange er dadurch nicht in einen Konflikt mit dem Ersten Gesetz gerät.\r\n";
+    print $sock "PRIVMSG $channel : Ein Roboter hat die Freiheit zu tun, was er will, es sei denn, er würde dadurch gegen das Erste, Zweite oder Dritte Gesetz verstoßen.\r\n";
+}
 
