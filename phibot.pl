@@ -107,6 +107,12 @@ while (my $input = <$sock>) {
         #twitter("$a[2]");
         #print "Rufe twitter\n";
     }
+    elsif ( $input =~ m/$nick/ig && $input =~ m/bueno/ig ) {
+        print $sock "PRIVMSG $channel : I have no more buenos. They were all eaten by Roland. :( \r\n";
+    }
+    elsif ( $input =~ m/$nick/ig && $input =~ m/\?/ig ) {
+        print $sock "PRIVMSG $channel : I have no idea :( \r\n";
+    }
     else {
         # ignored
     }
@@ -218,9 +224,15 @@ sub hilfe {
 }
 
 sub show_rules {
-    print $sock "PRIVMSG $channel : Ein Roboter darf keinen Menschen verletzen.\r\n";
-    print $sock "PRIVMSG $channel : Ein Roboter ist verpflichtet, mit Menschen zusammenzuarbeiten, es sei denn, diese Zusammenarbeit stünde im Widerspruch zum Ersten Gesetz.\r\n";
-    print $sock "PRIVMSG $channel : Ein Roboter muss seine eigene Existenz schützen, so lange er dadurch nicht in einen Konflikt mit dem Ersten Gesetz gerät.\r\n";
-    print $sock "PRIVMSG $channel : Ein Roboter hat die Freiheit zu tun, was er will, es sei denn, er würde dadurch gegen das Erste, Zweite oder Dritte Gesetz verstoßen.\r\n";
+    #print $sock "PRIVMSG $channel : Ein Roboter darf keinen Menschen verletzen.\r\n";
+    #print $sock "PRIVMSG $channel : Ein Roboter ist verpflichtet, mit Menschen zusammenzuarbeiten, es sei denn, diese Zusammenarbeit stünde im Widerspruch zum Ersten Gesetz.\r\n";
+    #print $sock "PRIVMSG $channel : Ein Roboter muss seine eigene Existenz schützen, so lange er dadurch nicht in einen Konflikt mit dem Ersten Gesetz gerät.\r\n";
+    #print $sock "PRIVMSG $channel : Ein Roboter hat die Freiheit zu tun, was er will, es sei denn, er würde dadurch gegen das Erste, Zweite oder Dritte Gesetz verstoßen.\r\n";
+    #print $sock "PRIVMSG $channel : (http://de.wikipedia.org/wiki/Robotergesetze) \r\n";
+    
+    print $sock "PRIVMSG $channel : A robot may not injure a human being or, through inaction, allow a human being to come to harm. \r\n";
+    print $sock "PRIVMSG $channel : A robot must obey the orders given to it by human beings, except where such orders would conflict with the First Law. \r\n";
+    print $sock "PRIVMSG $channel : A robot must protect its own existence as long as such protection does not conflict with the First or Second Law. \r\n";
+    print $sock "PRIVMSG $channel : (http://de.wikipedia.org/wiki/Robotergesetze) \r\n";
 }
 
