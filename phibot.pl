@@ -70,7 +70,10 @@ while (my $input = <$sock>) {
         # respond to PINGs to avoid disconnects.
         print $sock "PONG $1\r\n";
         #print $sock "PRIVMSG $channel :PONG :-) \r\n";
-    } 
+    }
+    elsif ( $input =~ m/JOIN/ig ) {
+        joined("$input");
+    }
     # <reload>
     elsif ($input =~ m/$nick/ig && $input =~ m/reload/ig ) { 
         reload_actions(); 
@@ -100,16 +103,17 @@ while (my $input = <$sock>) {
     elsif ($input =~ m/$channel :$nick:/ig ) { 
         execute("$input");
     }
-    # triggere den JiskoTwitter
+    # tweet
     elsif ($input =~ m/ALERT/ig ) {
         my @a = split('@',$input);
         $a[2] =~ s/]/:/ig;
         #twitter("$a[2]");
-        #print "Rufe twitter\n";
     }
+    # bueno fun
     elsif ( $input =~ m/$nick/ig && $input =~ m/bueno/ig ) {
         print $sock "PRIVMSG $channel : I have no more buenos. They were all eaten by Roland. :( \r\n";
     }
+    # question?
     elsif ( $input =~ m/$nick/ig && $input =~ m/\?/ig ) {
         print $sock "PRIVMSG $channel : I have no idea :( \r\n";
     }
@@ -129,7 +133,20 @@ while (my $input = <$sock>) {
 sub twitter {
     my (@string) = @_;
     system("/usr/bin/perl /home/sueswe/tweet.pl \"@string\"");
-    #print "twitit: perl /home/sueswe/jiskoTweet.pl \"@string\"\n";
+    print "twitit: perl /home/sueswe/tweet.pl \"@string\"\n";
+}
+
+sub joined {
+    my ($command) = @_;
+    $command =~ s/\r/\n/ig;
+    $command =~ s/\e//ig;
+    $command =~ s/\n//ig; 
+    my @usersuche = split('!',$command);
+    my $you = $usersuche[0];
+    $you =~ s/://ig;
+    if ( $you ne $nick ) {
+        print $sock "PRIVMSG $channel :Hello $you, welcome to $channel :) \r\n";
+    }
 }
 
 sub execute {
