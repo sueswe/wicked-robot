@@ -23,7 +23,7 @@
 
 ##############################################################################
 my $server  = "localhost";
-my $version = "0.2 rc6";
+my $version = "0.2 rc7";
 my $port = 6667;
 my $nick    = "phibot";
 my $login   = "phibot";
@@ -34,7 +34,7 @@ use warnings;
 use strict;
 use IO::Socket;
 
-$|=1;
+#$|=1;
 
 our %actions;
 require("actions.rc") || warn("ERROR: $! \n");
@@ -60,7 +60,7 @@ while (my $input = <$sock>) {
 }
  
 print $sock "JOIN $channel \r\n";
-print $sock "PRIVMSG $channel : At your service. You can ask me for help. (phibot $version ) \r\n";
+print $sock "PRIVMSG $channel : At your service. You can ask me for help. (I am phi(φ)bot version $version ) \r\n";
 
 # Keep us alive:
 while (my $input = <$sock>) {
@@ -144,7 +144,10 @@ sub joined {
     my @usersuche = split('!',$command);
     my $you = $usersuche[0];
     $you =~ s/://ig;
-    if ( $you ne $nick ) {
+    print "$you joined\n";
+    if ( $you =~ m/bot/ig ) {
+        print "we do not greet a bot\n";
+    } elsif ( $you ne $nick ) {
         print $sock "PRIVMSG $channel :Hello $you, welcome to $channel :) \r\n";
     }
 }
@@ -176,7 +179,7 @@ sub execute {
     
     if ( ! exists($actions{"$key"})  ) {
         print("[INFO]: nothing to do for $command \n");
-        print $sock "PRIVMSG $channel :I'm sorry, I cannot find an operation for: $p \r\n";
+        print $sock "PRIVMSG $channel :I'm sorry, I cannot find an operation for: $p You should write a script for it! :-) \r\n";
     } else {
         print $sock "PRIVMSG $channel :$you: Ok, processing @T ... \r\n";
         runcmd("$programm @T");
