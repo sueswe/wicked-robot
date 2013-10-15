@@ -39,12 +39,13 @@ $|=1;
 our %actions;
 require("actions.rc") || warn("ERROR: $! \n");
 
-print "Connectiong to $server ... ";
+print "Connecting to $server ... ";
 my $sock = new IO::Socket::INET(
     PeerAddr => $server,
     PeerPort => $port,
     Proto => 'tcp') or die "Problem: \n--> $! \n";
 autoflush $sock 1;
+
 # Login:
 print $sock "NICK $nick\r\n";
 print $sock "USER $login 8 * :Perl IRC Hacks Robot\r\n";
@@ -60,7 +61,7 @@ while (my $input = <$sock>) {
 }
  
 print $sock "JOIN $channel \r\n";
-print $sock "PRIVMSG $channel : At your service. You can ask me for help. (I am phi(φ)bot version $version ) \r\n";
+print $sock "PRIVMSG $channel : At your service. Ask me for help. (I am phi(φ)bot version $version ) \r\n";
 
 # Keep us alive:
 while (my $input = <$sock>) {
@@ -221,7 +222,8 @@ sub read_actions {
 }
 
 sub part {
-    print $sock "PART $channel :Good bye. \n";
+    #print $sock "PART $channel :Good bye. \n";
+    print $sock "PRIVMSG $channel : No way! :-P \n\r"; 
     exit(100);
 }
 
