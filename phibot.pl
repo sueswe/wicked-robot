@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 ##############################################################################
 #
@@ -220,8 +220,7 @@ sub read_actions {
 }
 
 sub part {
-    print $sock "PART $channel :Good bye. \n";
-    #print $sock "PRIVMSG $channel : No way! :-P \n\r"; 
+    print $sock "PART $channel :As you wish, master. \n";
     exit(100);
 }
 
