@@ -23,7 +23,7 @@
 
 ##############################################################################
 my $server  = "localhost";
-my $version = "0.2 rc7";
+my $version = "0.3 rc2";
 my $port = 6667;
 my $nick    = "phibot";
 my $login   = "phibot";
@@ -34,7 +34,7 @@ use warnings;
 use strict;
 use IO::Socket;
 
-#$|=1;
+$|=1;
 
 our %actions;
 require("actions.rc") || warn("ERROR: $! \n");
@@ -115,7 +115,9 @@ while (my $input = <$sock>) {
     }
     # question?
     elsif ( $input =~ m/$nick/ig && $input =~ m/\?/ig ) {
-        print $sock "PRIVMSG $channel : I have no idea :( \r\n";
+        #print $sock "PRIVMSG $channel : I have no idea :( \r\n";
+        print "Someone asked me a question. Calling Elli for help.\n";
+        elli();
     }
     else {
         # ignored
@@ -253,6 +255,23 @@ sub show_rules {
     print $sock "PRIVMSG $channel : A robot may not injure a human being or, through inaction, allow a human being to come to harm. \r\n";
     print $sock "PRIVMSG $channel : A robot must obey the orders given to it by human beings, except where such orders would conflict with the First Law. \r\n";
     print $sock "PRIVMSG $channel : A robot must protect its own existence as long as such protection does not conflict with the First or Second Law. \r\n";
-    print $sock "PRIVMSG $channel : (http://de.wikipedia.org/wiki/Robotergesetze) \r\n";
+    print $sock "PRIVMSG $channel : (http://de.wikipedia.org/wiki/Robotergesetze \tThis is _NOT_ from AI movie.) \r\n";
 }
+
+sub elli {
+    my $data = 'elli.txt';
+    my $line;
+    if ( ! -e $data ) {
+        print $sock "PRIVMSG $channel : I have no idea :( \r\n";
+    } else {
+        open(TXT,"< $data");
+        srand; 
+        rand($.) < 1 && ( $line = $_) while <TXT>; 
+        #print "[ELLI] $line \n";
+        print $sock "PRIVMSG $channel : $line \r\n";
+        close(TXT);
+    }
+}
+
+
 
