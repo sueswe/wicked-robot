@@ -70,7 +70,7 @@ while (my $input = <$sock>) {
     if ($input =~ /^PING(.*)$/i) {
         # respond to PINGs to avoid disconnects.
         print $sock "PONG $1\r\n";
-        #print $sock "PRIVMSG $channel :PONG :-) \r\n";
+        # print $sock "PRIVMSG $channel :PONG :-) \r\n";
     }
     elsif ( $input =~ m/JOIN/ig ) {
         joined("$input");
@@ -80,24 +80,23 @@ while (my $input = <$sock>) {
         reload_actions(); 
     } 
     # <rules>
-    elsif ($input =~ m/$nick/ig && $input =~ m/action/ig ) {
+    elsif ($input =~ m/$nick/ig && $input =~ m/action|aktion/ig ) {
         read_actions();
     } 
     # <part>
     elsif ($input =~ m/$nick/ig && $input =~ m/leave/ig ) {
         part();
     } 
-    # <hilfe>
-    elsif ($input =~ m/$nick/ig && $input =~ m/help/ig || $input =~ m/hilf/ig ) {
-        hilfe();
+    # <help>
+    elsif ($input =~ m/$nick/ig && $input =~ m/help|hilf/ig ) {
+        help();
     } 
     # beer
-    elsif
-    ($input =~ m/$nick/ig && $input =~ m/bier/ig ) {
+    elsif ($input =~ m/bier|beer|duff|seidl|hoibe|stiegl|zipfer|gösser/ig ) {
         beer("$input");
     } 
     # show us the rules
-    elsif ( $input =~ m/$nick/ig && $input =~ m/rules/ig || $input =~ m/regeln/ig ) {
+    elsif ( $input =~ m/$nick/ig && $input =~ m/rules|laws|gesetzte|regel/ig ) {
         show_rules();
     }
     # do something from <actions.rc>
@@ -116,7 +115,6 @@ while (my $input = <$sock>) {
     }
     # question?
     elsif ( $input =~ m/$nick/ig && $input =~ m/\?/ig ) {
-        #print $sock "PRIVMSG $channel : I have no idea :( \r\n";
         print "Someone asked me a question. Calling Elli for help.\n";
         elli();
     }
@@ -151,7 +149,7 @@ sub joined {
     if ( $you =~ m/bot/ig ) {
         print "we do not greet a bot\n";
     } elsif ( $you ne $nick ) {
-        print $sock "PRIVMSG $channel :Hello $you, welcome to $channel :) \r\n";
+        print $sock "PRIVMSG $channel :Hello $you, welcome to $channel :) . I am $nick . I can help you. \r\n";
     }
 }
 
@@ -218,12 +216,12 @@ sub read_actions {
         #print $sock "PRIVMSG $channel :Command $g = $actions{$g} \n\r";
         print $sock "PRIVMSG $channel :      $g \n\r";
     }
-    print $sock "PRIVMSG $channel : Usage: phibot: <action> \n\r";
+    print $sock "PRIVMSG $channel : Usage: phibot: <action>  (beware of the ':')\n\r";
 }
 
 sub part {
-    #print $sock "PART $channel :Good bye. \n";
-    print $sock "PRIVMSG $channel : No way! :-P \n\r"; 
+    print $sock "PART $channel :Good bye. \n";
+    #print $sock "PRIVMSG $channel : No way! :-P \n\r"; 
     exit(100);
 }
 
@@ -235,7 +233,7 @@ sub beer {
     print $sock "PRIVMSG $channel :$you, you can order beer at http://www.duff-shop.at/  \r\n";
 }
 
-sub hilfe {
+sub help {
     print "Help called.\n";
     print $sock "PRIVMSG $channel :Well, maybe I can help you ... \r\n";
     print $sock "PRIVMSG $channel :  say \r\n";
@@ -243,7 +241,7 @@ sub hilfe {
     print $sock "PRIVMSG $channel :  $nick actions  = show me the actions in the configfile \r\n";
     print $sock "PRIVMSG $channel :  $nick leave  = I will leave the server and exit \r\n";
     print $sock "PRIVMSG $channel :  $nick rules  = I will show you my rules \r\n";
-    print $sock "PRIVMSG $channel :  $nick : <action>  = Start the action (beware of the ':') \r\n";
+    print $sock "PRIVMSG $channel :  $nick : <action>  = Start the action (beware of the ':' <-- IMPORTANT) \r\n";
     
 }
 
@@ -257,7 +255,7 @@ sub show_rules {
     print $sock "PRIVMSG $channel : A robot may not injure a human being or, through inaction, allow a human being to come to harm. \r\n";
     print $sock "PRIVMSG $channel : A robot must obey the orders given to it by human beings, except where such orders would conflict with the First Law. \r\n";
     print $sock "PRIVMSG $channel : A robot must protect its own existence as long as such protection does not conflict with the First or Second Law. \r\n";
-    print $sock "PRIVMSG $channel : (http://de.wikipedia.org/wiki/Robotergesetze \tThis is _NOT_ from AI movie.) \r\n";
+    print $sock "PRIVMSG $channel : (http://en.wikipedia.org/wiki/Three_Laws_of_Robotics \tThis is _NOT_ from AI movie.) \r\n";
 }
 
 sub elli {
