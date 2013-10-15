@@ -79,7 +79,7 @@ while (my $input = <$sock>) {
     elsif ($input =~ m/$nick/ig && $input =~ m/reload/ig ) { 
         reload_actions(); 
     } 
-    # <rules>
+    # <actions>
     elsif ($input =~ m/$nick/ig && $input =~ m/action|aktion/ig ) {
         read_actions();
     } 
@@ -100,7 +100,7 @@ while (my $input = <$sock>) {
         show_rules();
     }
     # do something from <actions.rc>
-    elsif ($input =~ m/$channel :$nick/ig ) { 
+    elsif ($input =~ m/$channel :$nick:/ig ) { 
         execute("$input");
     }
     # tweet
