@@ -23,7 +23,7 @@
 
 ##############################################################################
 my $server  = "localhost";
-my $version = "0.3 rc2";
+my $version = "0.3 rc3";
 my $port = 6667;
 my $nick    = "phibot";
 my $login   = "phibot";
@@ -100,7 +100,7 @@ while (my $input = <$sock>) {
         show_rules();
     }
     # do something from <actions.rc>
-    elsif ($input =~ m/$channel :$nick:/ig ) { 
+    elsif ($input =~ m/$channel :$nick/ig ) { 
         execute("$input");
     }
     # tweet
@@ -180,9 +180,9 @@ sub execute {
     
     if ( ! exists($actions{"$key"})  ) {
         print("[INFO]: nothing to do for $command \n");
-        print $sock "PRIVMSG $channel :I'm sorry, I cannot find an operation for: $p You should write a script for it! :-) \r\n";
+        print $sock "PRIVMSG $channel :(sorry, I cannot find an operation for: $p You should write a script for it! :-) \r\n";
     } else {
-        print $sock "PRIVMSG $channel :$you: Ok, processing @T ... \r\n";
+        #print $sock "PRIVMSG $channel :$you: Ok, processing @T ... \r\n";
         runcmd("$programm @T");
     }
     
