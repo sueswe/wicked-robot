@@ -182,7 +182,7 @@ sub execute {
         print("[INFO]: nothing to do for $command \n");
         print $sock "PRIVMSG $channel :I'm sorry, I cannot find an operation for: $p You should write a script for it! :-) \r\n";
     } else {
-        print $sock "PRIVMSG $channel :$you: Ok, processing @T ... \r\n";
+        #print $sock "PRIVMSG $channel :$you: Ok, processing @T ... \r\n";
         runcmd("$programm @T");
     }
     
@@ -206,7 +206,7 @@ sub runcmd {
     }
     close(FH);
     my $RTC = $? >> 8;
-    print $sock "PRIVMSG $channel :Returncode @command : $RTC .\r\n";
+    print $sock "PRIVMSG $channel :                                                        rtc=$RTC .\r\n";
 }
 
 sub read_actions {
