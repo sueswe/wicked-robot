@@ -59,7 +59,8 @@ while (my $input = <$sock>) {
         die "Nickname \"$nick\" already in use! \n";
     }
 }
- 
+
+print $sock "MODE $nick +B \r\n"; 
 print $sock "JOIN $channel \r\n";
 print $sock "PRIVMSG $channel : At your service. Ask me for help. (I am phi(φ)bot version $version ) \r\n";
 
