@@ -60,7 +60,7 @@ while (my $input = <$sock>) {
     }
 }
 
-print $sock "MODE $nick +B \r\n"; 
+print $sock "MODE $nick +B \r\n"; # I am robot.
 print $sock "JOIN $channel \r\n";
 print $sock "PRIVMSG $channel : At your service. Ask me for help. (I am phi(φ)bot version $version ) \r\n";
 
@@ -119,6 +119,10 @@ while (my $input = <$sock>) {
         print "Someone asked me a question. Calling Elli for help.\n";
         elli();
     }
+    # greeting
+    elsif ( $input =~ m/hallo|hello/ig && $input =~ m/$nick/ig ) {
+        greet("$input");
+    }
     else {
         # ignored
     }
@@ -150,7 +154,23 @@ sub joined {
     if ( $you =~ m/bot/ig ) {
         print "we do not greet a bot\n";
     } elsif ( $you ne $nick ) {
-        print $sock "PRIVMSG $channel :Hello $you, welcome to $channel :) . I am $nick . I can help you. \r\n";
+        print $sock "PRIVMSG $channel :Hello $you, welcome to $channel :) . I am (φ)$nick . I can help you. \r\n";
+    }
+}
+
+sub greet {
+    my ($command) = @_;
+    $command =~ s/\r/\n/ig;
+    $command =~ s/\e//ig;
+    $command =~ s/\n//ig; 
+    my @usersuche = split('!',$command);
+    my $you = $usersuche[0];
+    $you =~ s/://ig;
+    print "$you joined\n";
+    if ( $you =~ m/bot/ig ) {
+        print "we do not greet a bot\n";
+    } elsif ( $you ne $nick ) {
+        print $sock "PRIVMSG $channel :Hello $you . Whazup? \r\n";
     }
 }
 
