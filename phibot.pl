@@ -113,13 +113,6 @@ while (my $input = <$sock>) {
         execute("$input");
     }
 
-    # <tweet>
-    elsif ($input =~ m/ALERT/ig ) {
-        my @a = split('@',$input);
-        $a[2] =~ s/]/:/ig;
-        #twitter("$a[2]");
-    }
-
     # <bueno fun>
     elsif ( $input =~ m/$nick/ig && $input =~ m/bueno/ig ) {
         print $sock "PRIVMSG $channel : I have no more buenos. They were all eaten by Roland. :( \r\n";
@@ -147,12 +140,6 @@ while (my $input = <$sock>) {
 # FUNCTIONS
 #
 ##############################################################################
-
-sub twitter {
-    my (@string) = @_;
-    system("/usr/bin/perl /home/sueswe/tweet.pl \"@string\"");
-    print "twitit: perl /home/sueswe/tweet.pl \"@string\"\n";
-}
 
 sub joined {
     my ($command) = @_;
