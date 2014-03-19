@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 ##############################################################################
 #
@@ -23,7 +23,7 @@
 
 ##############################################################################
 my $server  = "localhost";
-my $version = "0.3 rc2";
+my $version = "0.3 rc4";
 my $port = 6667;
 my $nick    = "phibot";
 my $login   = "phibot";
@@ -44,7 +44,7 @@ my $sock = new IO::Socket::INET(
     PeerAddr => $server,
     PeerPort => $port,
     Proto => 'tcp') or die "Problem: \n--> $! \n";
-autoflush $sock 1;
+#autoflush $sock 1;
 
 # Login:
 print $sock "NICK $nick\r\n";
@@ -60,9 +60,10 @@ while (my $input = <$sock>) {
     }
 }
 
+
 print $sock "MODE $nick +B \r\n"; # I am robot.
 print $sock "JOIN $channel \r\n";
-print $sock "PRIVMSG $channel : At your service. Ask me for help. (I am phi(φ)bot version $version ) \r\n";
+print $sock "PRIVMSG $channel : At your service. Ask me for help. (I am φbot version $version ) \r\n";
 
 # Keep us alive:
 while (my $input = <$sock>) {
@@ -76,49 +77,60 @@ while (my $input = <$sock>) {
     elsif ( $input =~ m/JOIN/ig ) {
         joined("$input");
     }
+
     # <reload>
     elsif ($input =~ m/$nick/ig && $input =~ m/reload/ig ) { 
         reload_actions(); 
     } 
-    # <rules>
+
+    # <actions>
     elsif ($input =~ m/$nick/ig && $input =~ m/action|aktion/ig ) {
         read_actions();
     } 
+
     # <part>
     elsif ($input =~ m/$nick/ig && $input =~ m/leave/ig ) {
         part();
     } 
+
     # <help>
     elsif ($input =~ m/$nick/ig && $input =~ m/help|hilf/ig ) {
         help();
     } 
-    # beer
+
+    # <beer>
     elsif ($input =~ m/bier|beer|duff|seidl|hoibe|stiegl|zipfer|gösser/ig ) {
         beer("$input");
     } 
-    # show us the rules
+
+    # <show us the rules>
     elsif ( $input =~ m/$nick/ig && $input =~ m/rules|laws|gesetzte|regel/ig ) {
         show_rules();
     }
+
     # do something from <actions.rc>
     elsif ($input =~ m/$channel :$nick:/ig ) { 
         execute("$input");
     }
-    # tweet
+
+    # <tweet>
     elsif ($input =~ m/ALERT/ig ) {
         my @a = split('@',$input);
         $a[2] =~ s/]/:/ig;
         #twitter("$a[2]");
     }
-    # bueno fun
+
+    # <bueno fun>
     elsif ( $input =~ m/$nick/ig && $input =~ m/bueno/ig ) {
         print $sock "PRIVMSG $channel : I have no more buenos. They were all eaten by Roland. :( \r\n";
     }
-    # question?
-    elsif ( $input =~ m/$nick/ig && $input =~ m/\?/ig ) {
-        print "Someone asked me a question. Calling Elli for help.\n";
+
+    # <question?>
+    elsif ( $input =~ m/\?/ig ) {
+        print "Someone asked me a question. Calling Elli for an answer.\n";
         elli();
     }
+    
     # greeting
     elsif ( $input =~ m/hallo|hello/ig && $input =~ m/$nick/ig ) {
         greet("$input");
@@ -175,6 +187,7 @@ sub greet {
 }
 
 sub execute {
+    # do something from actions.rc
     my ($command) = @_;
     $command =~ s/\r/\n/ig;
     $command =~ s/\e//ig;
@@ -201,7 +214,7 @@ sub execute {
     
     if ( ! exists($actions{"$key"})  ) {
         print("[INFO]: nothing to do for $command \n");
-        print $sock "PRIVMSG $channel :I'm sorry, I cannot find an operation for: $p You should write a script for it! :-) \r\n";
+        print $sock "PRIVMSG $channel :(sorry, I cannot find an operation for: $p You should write a script for it! :-) \r\n";
     } else {
         #print $sock "PRIVMSG $channel :$you: Ok, processing @T ... \r\n";
         runcmd("$programm @T");
@@ -241,8 +254,7 @@ sub read_actions {
 }
 
 sub part {
-    print $sock "PART $channel :Good bye. \n";
-    #print $sock "PRIVMSG $channel : No way! :-P \n\r"; 
+    print $sock "PART $channel :As you wish, master. \n";
     exit(100);
 }
 
@@ -262,17 +274,11 @@ sub help {
     print $sock "PRIVMSG $channel :  $nick actions  = show me the actions in the configfile \r\n";
     print $sock "PRIVMSG $channel :  $nick leave  = I will leave the server and exit \r\n";
     print $sock "PRIVMSG $channel :  $nick rules  = I will show you my rules \r\n";
-    print $sock "PRIVMSG $channel :  $nick : <action>  = Start the action (beware of the ':' <-- IMPORTANT) \r\n";
+    print $sock "PRIVMSG $channel :  $nick: <action>  = Start the action (beware of the ':' <-- IMPORTANT) \r\n";
     
 }
 
-sub show_rules {
-    #print $sock "PRIVMSG $channel : Ein Roboter darf keinen Menschen verletzen.\r\n";
-    #print $sock "PRIVMSG $channel : Ein Roboter ist verpflichtet, mit Menschen zusammenzuarbeiten, es sei denn, diese Zusammenarbeit stünde im Widerspruch zum Ersten Gesetz.\r\n";
-    #print $sock "PRIVMSG $channel : Ein Roboter muss seine eigene Existenz schützen, so lange er dadurch nicht in einen Konflikt mit dem Ersten Gesetz gerät.\r\n";
-    #print $sock "PRIVMSG $channel : Ein Roboter hat die Freiheit zu tun, was er will, es sei denn, er würde dadurch gegen das Erste, Zweite oder Dritte Gesetz verstoßen.\r\n";
-    #print $sock "PRIVMSG $channel : (http://de.wikipedia.org/wiki/Robotergesetze) \r\n";
-    
+sub show_rules {    
     print $sock "PRIVMSG $channel : A robot may not injure a human being or, through inaction, allow a human being to come to harm. \r\n";
     print $sock "PRIVMSG $channel : A robot must obey the orders given to it by human beings, except where such orders would conflict with the First Law. \r\n";
     print $sock "PRIVMSG $channel : A robot must protect its own existence as long as such protection does not conflict with the First or Second Law. \r\n";
