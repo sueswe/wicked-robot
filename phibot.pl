@@ -99,7 +99,7 @@ while (my $input = <$sock>) {
     } 
 
     # <beer>
-    elsif ($input =~ m/bier|beer|duff|seidl|hoibe|stiegl|zipfer|gösser/ig ) {
+    elsif ($input =~ m/bier|duff|seidl|hoibe|stiegl|zipfer|gösser/ig ) {
         beer("$input");
     } 
 
