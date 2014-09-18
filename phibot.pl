@@ -235,7 +235,7 @@ sub read_actions {
     foreach my $g (sort keys %actions) {
         print "[INFO]: $g \t--> { $actions{$g} } \n";
         #print $sock "PRIVMSG $channel :Command $g = $actions{$g} \n\r";
-        print $sock "PRIVMSG $channel :      $g \t[ $actions{$g} ]\n\r";
+        print $sock "PRIVMSG $channel :      $g      [ $actions{$g} ]\n\r";
     }
     print $sock "PRIVMSG $channel : Usage: phibot: <action>  (beware of the ':')\n\r";
 }
@@ -269,7 +269,7 @@ sub show_rules {
     print $sock "PRIVMSG $channel : A robot may not injure a human being or, through inaction, allow a human being to come to harm. \r\n";
     print $sock "PRIVMSG $channel : A robot must obey the orders given to it by human beings, except where such orders would conflict with the First Law. \r\n";
     print $sock "PRIVMSG $channel : A robot must protect its own existence as long as such protection does not conflict with the First or Second Law. \r\n";
-    print $sock "PRIVMSG $channel : (http://en.wikipedia.org/wiki/Three_Laws_of_Robotics \tThis is _NOT_ from AI movie.) \r\n";
+    print $sock "PRIVMSG $channel : (http://en.wikipedia.org/wiki/Three_Laws_of_Robotics  -- This is _not_ from AI movie.) \r\n";
 }
 
 sub elli {
