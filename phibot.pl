@@ -104,7 +104,7 @@ while (my $input = <$sock>) {
     } 
 
     # <show us the rules>
-    elsif ( $input =~ m/$nick/ig && $input =~ m/rules|laws|gesetzte|regel/ig ) {
+    elsif ( $input =~ m/$nick/ig && $input =~ m/rules|laws|gesetze|regel/ig ) {
         show_rules();
     }
 
