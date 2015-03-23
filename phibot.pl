@@ -43,12 +43,13 @@ print "Connecting to $server ... ";
 my $sock = new IO::Socket::INET(
     PeerAddr => $server,
     PeerPort => $port,
-    Proto => 'tcp') or die "Problem: \n--> $! \n";
-#autoflush $sock 1;
+    Proto => 'tcp') or die "Problem while creating socket: $! \n";
+autoflush $sock 1;
 
-# Login:
+
+### Login:
 print $sock "NICK $nick\r\n";
-print $sock "USER $login 8 * :Perl IRC Hacks Robot\r\n";
+print $sock "USER $login 8 * :Perl IRC Robot\r\n";
  
 while (my $input = <$sock>) {
     if ($input =~ /004/) {
@@ -60,12 +61,13 @@ while (my $input = <$sock>) {
     }
 }
 
-
+### Greetings:
 print $sock "MODE $nick +B \r\n"; # I am robot.
 print $sock "JOIN $channel \r\n";
 print $sock "PRIVMSG $channel : At your service. Ask me for help. (I am φbot version $version ) \r\n";
 
-# Keep us alive:
+
+### Keep it alive:
 while (my $input = <$sock>) {
     chomp($input);
     print "[IN] $input\n";
@@ -74,6 +76,8 @@ while (my $input = <$sock>) {
         print $sock "PONG $1\r\n";
         # print $sock "PRIVMSG $channel :PONG :-) \r\n";
     }
+    
+    # <joined>
     elsif ( $input =~ m/JOIN/ig ) {
         joined("$input");
     }
@@ -115,7 +119,7 @@ while (my $input = <$sock>) {
 
     # <bueno fun>
     elsif ( $input =~ m/$nick/ig && $input =~ m/bueno/ig ) {
-        print $sock "PRIVMSG $channel : I have no more buenos. They were all eaten by Roland. :( \r\n";
+        print $sock "PRIVMSG $channel : I have no more buenos. They were all eaten by r2wurzro. :( \r\n";
     }
 
     # <question?>
@@ -128,6 +132,8 @@ while (my $input = <$sock>) {
     elsif ( $input =~ m/hallo|hello/ig && $input =~ m/$nick/ig ) {
         greet("$input");
     }
+
+    ### THAT'S ENOUGH. EVERYTHING ELSE WILL BE IGNORED.
     else {
         # ignored
     }
