@@ -4,8 +4,8 @@
 #
 # phibot
 #
-# A simple configureable command-irc-bot 
-# 
+# A simple configureable command-irc-bot
+#
 # (c) 2013, <suess_w@gmx.net>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -50,7 +50,7 @@ autoflush $sock 1;
 ### Login:
 print $sock "NICK $nick\r\n";
 print $sock "USER $login 8 * :Perl IRC Robot\r\n";
- 
+
 while (my $input = <$sock>) {
     if ($input =~ /004/) {
         # login completed.
@@ -76,36 +76,36 @@ while (my $input = <$sock>) {
         print $sock "PONG $1\r\n";
         # print $sock "PRIVMSG $channel :PONG :-) \r\n";
     }
-    
+
     # <joined>
     elsif ( $input =~ m/JOIN/ig ) {
         joined("$input");
     }
 
     # <reload>
-    elsif ($input =~ m/$nick/ig && $input =~ m/reload/ig ) { 
-        reload_actions(); 
-    } 
+    elsif ($input =~ m/$nick/ig && $input =~ m/reload/ig ) {
+        reload_actions();
+    }
 
     # <actions>
     elsif ($input =~ m/$nick/ig && $input =~ m/action|aktion/ig ) {
         read_actions();
-    } 
+    }
 
     # <part>
     elsif ($input =~ m/$nick/ig && $input =~ m/leave/ig ) {
         part();
-    } 
+    }
 
     # <help>
     elsif ($input =~ m/$nick/ig && $input =~ m/help|hilf/ig ) {
         help();
-    } 
+    }
 
     # <beer>
     elsif ($input =~ m/bier|duff|seidl|hoibe|stiegl|zipfer|gösser/ig ) {
         beer("$input");
-    } 
+    }
 
     # <show us the rules>
     elsif ( $input =~ m/$nick/ig && $input =~ m/rules|laws|gesetze|regel/ig ) {
@@ -113,7 +113,7 @@ while (my $input = <$sock>) {
     }
 
     # do something from <actions.rc>
-    elsif ($input =~ m/$channel :$nick:/ig ) { 
+    elsif ($input =~ m/$channel :$nick:/ig ) {
         execute("$input");
     }
 
@@ -127,7 +127,7 @@ while (my $input = <$sock>) {
         print "Someone asked me a question. Calling Elli for an answer.\n";
         elli();
     }
-    
+
     # greeting
     elsif ( $input =~ m/hallo|hello/ig && $input =~ m/$nick/ig ) {
         greet("$input");
@@ -151,7 +151,7 @@ sub joined {
     my ($command) = @_;
     $command =~ s/\r/\n/ig;
     $command =~ s/\e//ig;
-    $command =~ s/\n//ig; 
+    $command =~ s/\n//ig;
     my @usersuche = split('!',$command);
     my $you = $usersuche[0];
     $you =~ s/://ig;
@@ -167,7 +167,7 @@ sub greet {
     my ($command) = @_;
     $command =~ s/\r/\n/ig;
     $command =~ s/\e//ig;
-    $command =~ s/\n//ig; 
+    $command =~ s/\n//ig;
     my @usersuche = split('!',$command);
     my $you = $usersuche[0];
     $you =~ s/://ig;
@@ -184,27 +184,27 @@ sub execute {
     my ($command) = @_;
     $command =~ s/\r/\n/ig;
     $command =~ s/\e//ig;
-    $command =~ s/\n//ig; 
+    $command =~ s/\n//ig;
     print "[COMMAND] $command \n";
     my @array = split(':',$command);
-    
+
     my @usersuche = split('!',$command);
     my $you = $usersuche[0];
     $you =~ s/://ig;
-    
+
     my $anz = @array;
     my $p = $array[$anz - 1];
     $p =~ s/^\s//ig;
-    
+
     print "[DEBUG] Value from key: \"$p\" \n";
-    
+
     my @T = split(' ',$p);
     print "[DEBUG] Input: @T \n";
     my $key = $T[0];
     shift(@T);
     print "[DEBUG] Input[0]: $key \n";
     my $programm = $actions{$key};
-    
+
     if ( ! exists($actions{"$key"})  ) {
         print("[INFO]: nothing to do for $command \n");
         print $sock "PRIVMSG $channel :(sorry, I cannot find an operation for: $p You should write a script for it! :-) \r\n";
@@ -212,7 +212,7 @@ sub execute {
         #print $sock "PRIVMSG $channel :$you: Ok, processing @T ... \r\n";
         runcmd("$programm @T");
     }
-    
+
 }
 
 sub reload_actions {
@@ -268,10 +268,11 @@ sub help {
     print $sock "PRIVMSG $channel :  $nick leave  = I will leave the server and exit \r\n";
     print $sock "PRIVMSG $channel :  $nick rules  = I will show you my rules \r\n";
     print $sock "PRIVMSG $channel :  $nick: <action>  = Start the action (beware of the ':' <-- IMPORTANT) \r\n";
-    
+    print $sock "PRIVMSG $channel :  $nick: My home is: http://sueswe.github.io/wicked-robot/ \r\n";
+
 }
 
-sub show_rules {    
+sub show_rules {
     print $sock "PRIVMSG $channel : A robot may not injure a human being or, through inaction, allow a human being to come to harm. \r\n";
     print $sock "PRIVMSG $channel : A robot must obey the orders given to it by human beings, except where such orders would conflict with the First Law. \r\n";
     print $sock "PRIVMSG $channel : A robot must protect its own existence as long as such protection does not conflict with the First or Second Law. \r\n";
@@ -285,13 +286,10 @@ sub elli {
         print $sock "PRIVMSG $channel : I have no idea :( \r\n";
     } else {
         open(TXT,"< $data");
-        srand; 
-        rand($.) < 1 && ( $line = $_) while <TXT>; 
+        srand;
+        rand($.) < 1 && ( $line = $_) while <TXT>;
         #print "[ELLI] $line \n";
         print $sock "PRIVMSG $channel : $line \r\n";
         close(TXT);
     }
 }
-
-
-
