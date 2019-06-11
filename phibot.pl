@@ -224,6 +224,8 @@ sub reload_actions {
 
 sub runcmd {
     my (@command) = @_;
+    print $sock "DEBUG: @command \n";
+    print "DEBUG: @command \n";
     open(FH,"-|","@command") || print $sock "PRIVMSG $channel :Uhoh: [@command]: $! \r\n";
     while(<FH>) {
         my $out .= $_;
