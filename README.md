@@ -6,7 +6,7 @@
 
 The phibot is a bot for an irc-channel.  
 As like the wickedrobot, you can order him commands,  
-but within a chat-session an an irc-server.  
+but within a chat-session on an irc-server.  
 
 Just configure the actions.rc file for your commands,  
 edit the phibot.pl (servername, channelname) and  
@@ -31,7 +31,7 @@ messages against an action-file,
 so it is possible to define actions, and run them  
 on demand when you need them.  
 The wickedclient.pl is just an example how messages  
-can be communivated to the server.  
+can be communicated to the server.  
 
 
 
