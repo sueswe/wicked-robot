@@ -37,7 +37,7 @@ use IO::Socket;
 $|=1;
 
 our %actions;
-require("actions.rc") || warn("ERROR: $! \n");
+require("./actions.rc") || warn("ERROR: $! \n");
 
 print "Connecting to $server ... ";
 my $sock = new IO::Socket::INET(
